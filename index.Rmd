@@ -1,0 +1,15 @@
+---
+title: "Welcome to BIOS26121"
+date: "1/20/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+Welcome to the BIOS 26121 Class Page!
+
+Click on the links below to access content.
+
+[Lab2: RNA-seq preprocessing in Linux](Lab2.html)

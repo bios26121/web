@@ -1,0 +1,10 @@
+name: BIOS26121
+output_dir: docs
+output:
+  html_document:
+    toc: yes
+    toc_float: yes
+    theme: flatly
+    highlight: textmate
+    lib_dir: site_libs
+    self_contained: no
