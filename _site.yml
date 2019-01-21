@@ -1,5 +1,7 @@
-name: BIOS26121
+name: BIOS26121 
 output_dir: docs
+navbar:
+  title: BOIS26121
 output:
   html_document:
     theme: flatly

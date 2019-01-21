@@ -1,6 +1,5 @@
 ---
 title: "Welcome to BIOS26121"
-date: "1/20/2019"
 output: html_document
 ---
 
@@ -8,7 +7,7 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-Welcome to the BIOS 26121 Class Page!
+Welcome to the BIOS 26121 Lab Page!
 
 Click on the links below to access content.
 
