@@ -1,8 +1,5 @@
 ---
 title: "RNA-seq Preprocessing in Linux"
-subtitle: "BIOS 26121"
-author: "Alan Selewa"
-date: "1/20/2019"
 output: html_document
 ---
 
@@ -46,7 +43,7 @@ NA18510_argonne.fastq.gz  NA18852_argonne.fastq.gz  NA19093_argonne.fastq.gz  NA
 The raw reads are in [FASTQ](https://en.wikipedia.org/wiki/FASTQ_format) format with 46 bp single-end reads. The FASTQ files are compressed by `gzip` to save disk storage, thus the files have a `.gz` extension. It's not important to know how this works but its **important to know how to read the contents of a zipped folder without unzipping it**. In Linux, `zcat` is used to read text files that are zipped, similar to how `cat` is used to read unzipped text files. We can view a few entries in a FASTQ file in the following way:
 
 ```{bash,eval=F}
-zcat /project2/xinhe/alan/Lab2_RNAseq_Processing/unmapped_reads/NA18856_argonne.fastq.gz | head -n 4    # print the first 4 lines of the file
+zcat /project2/xinhe/alan/Lab2_RNAseq_Processing/unmapped_reads/NA18856_argonne.fastq.gz | head -n 4
 ```
 
 The output should look like this:
@@ -112,13 +109,13 @@ To check the status of the job, type:
 qstat -u CNETID
 ```
 
-If the jod is running smoothly, the `Use` status will be `R`:
+If the job is running smoothly, the `Use` status will be `R` (Running). If the job encounters an error or is fininished, it will display `C` (Canceled). 
 
 ```{bash,eval=F}
                                                                                Req'd  Req'd   Elap
 Job id               Username Queue    Name                 SessID NDS   TSK   Memory Time Use S Time
 -------------------- -------- -------- -------------------- ------ ----- ----- ------ ----- - -----
-56523402             CNETID   broadwl    fastqc               --         1     1     -- 12:00 R 00:00
+56523402             CNETID   broadwl  fastqc               --         1     1     -- 12:00 R 00:00
 ```
 
 If for any reason the job fails, you can check `fastq_errors` file (in the same directory) for error messages.
@@ -292,7 +289,7 @@ We performed alignment in the second section but we did not discuss the quality 
 * Total number of reads
 * Number and percentage of uniquely mapped reads 
 * Number of reads that are multi-mapped. What would you change (experimentally) to make this number lower?
-* Percentage of reads unmappe. What is the primary reason for unmapped reads?
+* Percentage of reads unmapped. What is the primary reason for unmapped reads?
 
 ### 3. **Library size** 
 

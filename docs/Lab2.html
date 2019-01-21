@@ -9,7 +9,6 @@
 <meta name="generator" content="pandoc" />
 
 
-<meta name="author" content="Alan Selewa" />
 
 
 <title>RNA-seq Preprocessing in Linux</title>
@@ -293,12 +292,22 @@ $(document).ready(function () {
 
 
 <h1 class="title toc-ignore">RNA-seq Preprocessing in Linux</h1>
-<h3 class="subtitle"><em>BIOS 26121</em></h3>
-<h4 class="author"><em>Alan Selewa</em></h4>
-<h4 class="date"><em>1/20/2019</em></h4>
 
 </div>
 
+<div id="TOC">
+<ul>
+<li><a href="#getting-started">Getting started</a></li>
+<li><a href="#fastq-quality-control">FASTQ Quality Control</a></li>
+<li><a href="#alignment">Alignment</a></li>
+<li><a href="#assign-features">Assign features</a></li>
+<li><a href="#exercises">Exercises</a><ul>
+<li><a href="#fastqc-reports">1. <strong>FastQC Reports</strong></a></li>
+<li><a href="#alignment-1">2. <strong>Alignment</strong></a></li>
+<li><a href="#library-size">3. <strong>Library size</strong></a></li>
+</ul></li>
+</ul>
+</div>
 
 <div id="getting-started" class="section level1">
 <h1>Getting started</h1>
@@ -316,7 +325,7 @@ $(document).ready(function () {
 <pre class="bash"><code>NA18504_argonne.fastq.gz  NA18519_argonne.fastq.gz  NA18856_argonne.fastq.gz  NA19099_argonne.fastq.gz  NA19116_argonne.fastq.gz
 NA18510_argonne.fastq.gz  NA18852_argonne.fastq.gz  NA19093_argonne.fastq.gz  NA19102_argonne.fastq.gz  NA19140_argonne.fastq.gz</code></pre>
 <p>The raw reads are in <a href="https://en.wikipedia.org/wiki/FASTQ_format">FASTQ</a> format with 46 bp single-end reads. The FASTQ files are compressed by <code>gzip</code> to save disk storage, thus the files have a <code>.gz</code> extension. It’s not important to know how this works but its <strong>important to know how to read the contents of a zipped folder without unzipping it</strong>. In Linux, <code>zcat</code> is used to read text files that are zipped, similar to how <code>cat</code> is used to read unzipped text files. We can view a few entries in a FASTQ file in the following way:</p>
-<pre class="bash"><code>zcat /project2/xinhe/alan/Lab2_RNAseq_Processing/unmapped_reads/NA18856_argonne.fastq.gz | head -n 4    # print the first 4 lines of the file</code></pre>
+<pre class="bash"><code>zcat /project2/xinhe/alan/Lab2_RNAseq_Processing/unmapped_reads/NA18856_argonne.fastq.gz | head -n 4</code></pre>
 <p>The output should look like this:</p>
 <pre class="bash"><code>@HWI-EAS146:1:5:17:1659#0/1                               # READ NAME
 CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCACCC            # SEQUENCE
@@ -356,11 +365,11 @@ fastqc $FASTQ_FILES \
 <pre class="bash"><code>sbatch fastqc.sbatch</code></pre>
 <p>To check the status of the job, type:</p>
 <pre class="bash"><code>qstat -u CNETID</code></pre>
-<p>If the jod is running smoothly, the <code>Use</code> status will be <code>R</code>:</p>
+<p>If the job is running smoothly, the <code>Use</code> status will be <code>R</code> (Running). If the job encounters an error or is fininished, it will display <code>C</code> (Canceled).</p>
 <pre class="bash"><code>                                                                               Req&#39;d  Req&#39;d   Elap
 Job id               Username Queue    Name                 SessID NDS   TSK   Memory Time Use S Time
 -------------------- -------- -------- -------------------- ------ ----- ----- ------ ----- - -----
-56523402             CNETID   broadwl    fastqc               --         1     1     -- 12:00 R 00:00</code></pre>
+56523402             CNETID   broadwl  fastqc               --         1     1     -- 12:00 R 00:00</code></pre>
 <p>If for any reason the job fails, you can check <code>fastq_errors</code> file (in the same directory) for error messages.</p>
 <p>The script above will generate a directory called <code>fastqc_results</code> in your scratch directory. In it, there are two files per FASTQ: <code>SAMPLE_NAME_fastqc.html</code> and <code>SAMPLE_NAME_fastqc.zip</code>. The HTML file contains all the test metrics and the .zip file contains the content needed to recreate the HTML file.</p>
 <p>To view the HTML reports, we will need to download them to our computes. Open a <em>new</em> terminal tab, and use the secure copy function <code>scp</code> to download them:</p>
@@ -479,7 +488,7 @@ ENSG00000243485.5   0   0   0   0   0   0   0   0   0   0</code></pre>
 <li>Total number of reads</li>
 <li>Number and percentage of uniquely mapped reads</li>
 <li>Number of reads that are multi-mapped. What would you change (experimentally) to make this number lower?</li>
-<li>Percentage of reads unmappe. What is the primary reason for unmapped reads?</li>
+<li>Percentage of reads unmapped. What is the primary reason for unmapped reads?</li>
 </ul>
 </div>
 <div id="library-size" class="section level3">

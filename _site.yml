@@ -4,6 +4,8 @@ navbar:
   title: BOIS26121
 output:
   html_document:
+    toc: yes
+    toc_float: no
     theme: flatly
     highlight: textmate
     lib_dir: site_libs
