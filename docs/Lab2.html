@@ -304,7 +304,8 @@ $(document).ready(function () {
 <li><a href="#exercises">Exercises</a><ul>
 <li><a href="#fastqc-reports">1. <strong>FastQC Reports</strong></a></li>
 <li><a href="#alignment-1">2. <strong>Alignment</strong></a></li>
-<li><a href="#library-size">3. <strong>Library size</strong></a></li>
+<li><a href="#multimapped-reads">3. <strong>Multimapped Reads</strong></a></li>
+<li><a href="#library-size">4. <strong>Library size</strong></a></li>
 </ul></li>
 </ul>
 </div>
@@ -321,11 +322,11 @@ $(document).ready(function () {
 <pre class="bash"><code>cd /scratch/midway2/CNETID</code></pre>
 <p><strong>In general, you should be running all commands while in your scratch directory unless otherwise stated.</strong></p>
 <p>The raw data can be found in the class directory. You do not need to go into the class directory. We will be processing RNA-seq samples from 10 lymphoblastoid cell lines derived from unrelated Nigerian individuals (Pickrell et al. 2010.) You can view the FASTQ files by typing:</p>
-<pre class="bash"><code>ls /project2/xinhe/alan/Lab2_RNAseq_Processing/unmapped_reads/</code></pre>
+<pre class="bash"><code>ls /project2/bios26121/Lab2_RNAseq_Processing/unmapped_reads/</code></pre>
 <pre class="bash"><code>NA18504_argonne.fastq.gz  NA18519_argonne.fastq.gz  NA18856_argonne.fastq.gz  NA19099_argonne.fastq.gz  NA19116_argonne.fastq.gz
 NA18510_argonne.fastq.gz  NA18852_argonne.fastq.gz  NA19093_argonne.fastq.gz  NA19102_argonne.fastq.gz  NA19140_argonne.fastq.gz</code></pre>
 <p>The raw reads are in <a href="https://en.wikipedia.org/wiki/FASTQ_format">FASTQ</a> format with 46 bp single-end reads. The FASTQ files are compressed by <code>gzip</code> to save disk storage, thus the files have a <code>.gz</code> extension. It’s not important to know how this works but its <strong>important to know how to read the contents of a zipped folder without unzipping it</strong>. In Linux, <code>zcat</code> is used to read text files that are zipped, similar to how <code>cat</code> is used to read unzipped text files. We can view a few entries in a FASTQ file in the following way:</p>
-<pre class="bash"><code>zcat /project2/xinhe/alan/Lab2_RNAseq_Processing/unmapped_reads/NA18856_argonne.fastq.gz | head -n 4</code></pre>
+<pre class="bash"><code>zcat /project2/bios26121/Lab2_RNAseq_Processing/unmapped_reads/NA18856_argonne.fastq.gz | head -n 4</code></pre>
 <p>The output should look like this:</p>
 <pre class="bash"><code>@HWI-EAS146:1:5:17:1659#0/1                               # READ NAME
 CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCACCC            # SEQUENCE
@@ -336,7 +337,7 @@ BBB@1@&gt;B?AABBBBBBBBABAAB&gt;=A=BBBA9@7@&gt;/@3A&lt;)&lt;5@            # BASE 
 <h1>FASTQ Quality Control</h1>
 <p>We would like to assess the quality of the reads before moving to alignment. We will use a popular tool called FASTQC, which compiles a detailed report about the FASTQ files. Note that FASTQC (and most softwares) takes zipped directly as input, so theres no need to unzip them beforehand. FASTQC will genetate one report per FASTQ file, and requires manual inspection of the report. We have 10 fastq files, therefore inspecting each manually is managable. Projects with hundreds of FASTQC reports use tools such as <code>MultiQC</code> to aggregate the reports. We will simply inspect them manually.</p>
 <p>To run FASTQC, start by copying the sbatch script for FASTQC into your scratch directory:</p>
-<pre class="bash"><code>cp /project2/xinhe/alan/Lab2_RNAseq_Processing/fastqc.sbatch .</code></pre>
+<pre class="bash"><code>cp /project2/bios26121/Lab2_RNAseq_Processing/fastqc.sbatch .</code></pre>
 <p>To view the contents of the script, type:</p>
 <pre class="bash"><code>cat fastqc.sbatch</code></pre>
 <pre class="bash"><code>#!/bin/bash
@@ -349,11 +350,11 @@ BBB@1@&gt;B?AABBBBBBBBABAAB&gt;=A=BBBA9@7@&gt;/@3A&lt;)&lt;5@            # BASE 
 #SBATCH --ntasks=1
 #SBATCH --mem-per-cpu=20000
 #SBATCH --account=pi-xinhe
-#SBATCH --partition=xinhe
+#SBATCH --partition=broadwl
 
 module load fastqc
 
-FASTQ_FILES=$(ls /project2/xinhe/alan/Lab2_RNAseq_Processing/unmapped_reads/*)
+FASTQ_FILES=$(ls /project2/bios26121/Lab2_RNAseq_Processing/unmapped_reads/*)
 OUT_DIR=&#39;fastqc_results&#39;
 
 mkdir $OUT_DIR
@@ -370,7 +371,7 @@ fastqc $FASTQ_FILES \
 Job id               Username Queue    Name                 SessID NDS   TSK   Memory Time Use S Time
 -------------------- -------- -------- -------------------- ------ ----- ----- ------ ----- - -----
 56523402             CNETID   broadwl  fastqc               --         1     1     -- 12:00 R 00:00</code></pre>
-<p>If for any reason the job fails, you can check <code>fastq_errors</code> file (in the same directory) for error messages.</p>
+<p>If for any reason the job fails, you can check <code>fastq_errors</code> file (in the same directory) for error messages. This should take ~5 minutes to complete.</p>
 <p>The script above will generate a directory called <code>fastqc_results</code> in your scratch directory. In it, there are two files per FASTQ: <code>SAMPLE_NAME_fastqc.html</code> and <code>SAMPLE_NAME_fastqc.zip</code>. The HTML file contains all the test metrics and the .zip file contains the content needed to recreate the HTML file.</p>
 <p>To view the HTML reports, we will need to download them to our computes. Open a <em>new</em> terminal tab, and use the secure copy function <code>scp</code> to download them:</p>
 <pre class="bash"><code>CNETID=&#39;X&#39;
@@ -382,7 +383,7 @@ scp -r $CNETID@midway2.rcc.uchicago.edu:/scratch/midway2/$CNETID/fastqc_results/
 <h1>Alignment</h1>
 <p>We will now align the reads. We will be using the <a href="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3530905/">STAR</a> aligner to align our reads to the human reference genome hg38. STAR is a splice-junction-aware aligner, meaning it can map spliced mRNA (which doesn’t contain introns) across a genomic region with introns.</p>
 <p>Once again, to run STAR, start by copying the sbatch script for STAR into your scratch directory:</p>
-<pre class="bash"><code>cp /project2/xinhe/alan/Lab2_RNAseq_Processing/align_reads.sbatch .</code></pre>
+<pre class="bash"><code>cp /project2/bios26121/Lab2_RNAseq_Processing/align_reads.sbatch .</code></pre>
 <p>View contents:</p>
 <pre class="bash"><code>cat align_reads.sbatch</code></pre>
 <pre class="bash"><code>#!/bin/bash
@@ -399,9 +400,9 @@ scp -r $CNETID@midway2.rcc.uchicago.edu:/scratch/midway2/$CNETID/fastqc_results/
 
 module load STAR
 
-STAR_REF_INDEX=&#39;/project2/xinhe/alan/Lab2_RNAseq_Processing/refGenome/STAR/&#39;
-FASTQ_FILES=$(ls /project2/xinhe/alan/Lab2_RNAseq_Processing/unmapped_reads/* | paste -sd,)
-READ_GROUP_IDs=$(ls /project2/xinhe/alan/Lab2_RNAseq_Processing/unmapped_reads | cut -d&#39;_&#39; -f1 | awk &#39;{print &quot; ID:&quot;$1&quot; &quot;}&#39; | paste -sd,)
+STAR_REF_INDEX=&#39;/project2/bios26121/Lab2_RNAseq_Processing/refGenome/STAR/&#39;
+FASTQ_FILES=$(ls /project2/bios26121/Lab2_RNAseq_Processing/unmapped_reads/* | paste -sd,)
+READ_GROUP_IDs=$(ls /project2/bios26121/Lab2_RNAseq_Processing/unmapped_reads | cut -d&#39;_&#39; -f1 | awk &#39;{print &quot; ID:&quot;$1&quot; &quot;}&#39; | paste -sd,)
 OUT_DIR=&#39;BAM_files&#39;
 
 mkdir $OUT_DIR
@@ -416,7 +417,7 @@ STAR --runThreadN 10 \
      --outFileNamePrefix $OUT_DIR/</code></pre>
 <p>Submit the sbatch script:</p>
 <pre class="bash"><code>sbatch align_reads.sbatch</code></pre>
-<p>The output is stored at <code>BAM_files/Aligned.sortedByCoord.out.bam</code>. The output is a <em>S</em>equence <em>A</em>lignment <em>M</em>ap <a href="https://en.wikipedia.org/wiki/SAM_(file_format)">SAM</a> file. It stores mapping information for each read, such as the mapping position, and the reference sequence onto which the read maps on. To further compress the SAM file and save, we convert it to a <em>BAM</em> file, which is a <em>B</em>inary SAM file. We also sorted the reads in the BAM file by their genomic coordinates (i.e. reads mapped in chromosome 1 are on top, and so forth), which is useful for downstream analyses.</p>
+<p>This should take ~5 mins to complete. The output is stored at <code>BAM_files/Aligned.sortedByCoord.out.bam</code>. The output is a <em>S</em>equence <em>A</em>lignment <em>M</em>ap <a href="https://en.wikipedia.org/wiki/SAM_(file_format)">SAM</a> file. It stores mapping information for each read, such as the mapping position, and the reference sequence onto which the read maps on. To further compress the SAM file and save, we convert it to a <em>BAM</em> file, which is a <em>B</em>inary SAM file. We also sorted the reads in the BAM file by their genomic coordinates (i.e. reads mapped in chromosome 1 are on top, and so forth), which is useful for downstream analyses.</p>
 <p>We can view the contents of the BAM file using <code>samtools</code>. <code>samtools</code> is very handy for manipulating BAM files. You can find a list of frequently used <code>samtools</code> commands <a href="http://www.htslib.org/doc/samtools.html">here</a>. We will use <code>view</code> to read simply view the contents of the BAM file:</p>
 <pre class="bash"><code>module load samtools
 
@@ -428,7 +429,7 @@ samtools view BAM_files/Aligned.sortedByCoord.out.bam | head -n 1</code></pre>
 <h1>Assign features</h1>
 <p>Now that the reads are aligned to genomic coordinates, we want to know which genes these reads mapped to. We will use <code>featureCounts</code> to count the number of reads that were mapped to each gene using an <em>annotation</em> file. The annotation file provides a description (length, gene name, etc.) to genomic regions, and featureCounts creates a tally of reads that were mapped in each genomic region.</p>
 <p>To run featureCounts, copy the sbatch script for featureCounts into your scratch directory:</p>
-<pre class="bash"><code>cp /project2/xinhe/alan/Lab2_RNAseq_Processing/featurecounts.sbatch .</code></pre>
+<pre class="bash"><code>cp /project2/bios26121/Lab2_RNAseq_Processing/featurecounts.sbatch .</code></pre>
 <pre class="bash"><code>cat featurecounts.sbatch</code></pre>
 <pre class="bash"><code>#!/bin/bash
 
@@ -441,9 +442,9 @@ samtools view BAM_files/Aligned.sortedByCoord.out.bam | head -n 1</code></pre>
 #SBATCH --account=pi-xinhe
 #SBATCH --partition=broadwl
 
-ANNOTATIONS=&#39;/project2/xinhe/alan/Lab2_RNAseq_Processing/refGenome/gencode.v27.annotation.gtf&#39;
+ANNOTATIONS=&#39;/project2/bios26121/Lab2_RNAseq_Processing/refGenome/gencode.v27.annotation.gtf&#39;
 BAMFILE=&#39;BAM_files/Aligned.sortedByCoord.out.bam&#39;
-FEATURECOUNTS=&#39;/project2/xinhe/alan/Lab2_RNAseq_Processing/software/featureCounts&#39;
+FEATURECOUNTS=&#39;/project2/bios26121/Lab2_RNAseq_Processing/software/featureCounts&#39;
 OUT_DIR=&#39;counts/&#39;
 
 mkdir $OUT_DIR
@@ -457,6 +458,7 @@ $FEATURECOUNTS -a $ANNOTATIONS \
 cut -f1,7-18 $OUT_DIR/counts.txt | sed &#39;s/BAM_files\/Aligned.sortedByCoord.out.bam://g&#39; | grep -v &quot;#&quot; &gt; $OUT_DIR/count_matrix.txt</code></pre>
 <p>Submit:</p>
 <pre class="r"><code>sbatch featurecounts.sbatch</code></pre>
+<p>This should take ~1 minute to complete.</p>
 <p>The script above does two things:</p>
 <ol style="list-style-type: decimal">
 <li><p>It calls the program <code>featureCounts</code> and returns <code>counts.txt</code>, which contains the read counts of each gene in each sample, as well as other metadata. We aren’t too interested in the metadata at this stage, which brings us to the next postprocessing step.</p></li>
@@ -485,14 +487,23 @@ ENSG00000243485.5   0   0   0   0   0   0   0   0   0   0</code></pre>
 <h3>2. <strong>Alignment</strong></h3>
 <p>We performed alignment in the second section but we did not discuss the quality of the alignment. STAR returns a log file called <code>Log.final.out</code> which has important statistics that we must consider. View the contents of this file and report the following:</p>
 <ul>
-<li>Total number of reads</li>
-<li>Number and percentage of uniquely mapped reads</li>
-<li>Number of reads that are multi-mapped. What would you change (experimentally) to make this number lower?</li>
-<li>Percentage of reads unmapped. What is the primary reason for unmapped reads?</li>
+<li>Total number of input reads</li>
+<li>Percentage of reads that are uniquely mapped</li>
+<li>Percentage of reads that are mapped to multiple loci</li>
+<li>Percentage of reads unmapped</li>
 </ul>
 </div>
+<div id="multimapped-reads" class="section level3">
+<h3>3. <strong>Multimapped Reads</strong></h3>
+<p>The alignment statistics from question #2 show the number of multimapped reads, which are reads that mapped equally well across multiple loci in the genome. The number of multimapped reads tells us how many reads map to <em>at least</em> 2 loci. In the STAR command, the parameter <code>--outFilterMultimapNmax</code> allows us to set the maximum number of loci that a read maps to. In the tutorial, we used a value of <code>1</code>, so we only kept uniquely mapped reads that aligned to <code>1</code> loci.</p>
+<ol style="list-style-type: lower-alpha">
+<li><p>Edit the STAR sbatch file and change the <code>outFilterMultimapNmax</code> parameter to <strong>5</strong>. Rerun the alignment and report the percentage of reads that are uniquely mapped in <code>Log.out.final</code>. Repeat for parameter values of <strong>10, 15, 20</strong>, each time reporting the percentage of multi-mapped reads.</p></li>
+<li><p>For multi-mapped reads, how many loci do most reads map to? Give a range based on the values from a).</p></li>
+<li><p>How can one reduce the multi-mapping rate experimentally? i.e. have more unique mapping?</p></li>
+</ol>
+</div>
 <div id="library-size" class="section level3">
-<h3>3. <strong>Library size</strong></h3>
+<h3>4. <strong>Library size</strong></h3>
 <p>Download the final gene count matrix <code>count_matrix.txt</code> to your computer by typing the following <code>scp</code> command on your laptop terminal:</p>
 <pre class="r"><code>CNETID=&#39;X&#39;
 scp $CNETID@midway2.rcc.uchicago.edu:/scratch/midway2/$CNETID/counts/count_matrix.txt ~/</code></pre>
