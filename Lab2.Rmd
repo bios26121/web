@@ -175,7 +175,7 @@ STAR --runThreadN 10 \
      --genomeDir $STAR_REF_INDEX \
      --readFilesIn $FASTQ_FILES \
      --readFilesCommand zcat \
-     --outFilterMultimapNmax 1 \
+     --outFilterMultimapNmax 100 \
      --outSAMtype BAM SortedByCoordinate \
      --outSAMattrRGline $READ_GROUP_IDs \
      --outFileNamePrefix $OUT_DIR/
@@ -295,9 +295,9 @@ We performed alignment in the second section but we did not discuss the quality 
 
 ### 3. **Multimapped Reads**
 
-The alignment statistics from question #2 show the number of multimapped reads, which are reads that mapped equally well across multiple loci in the genome. The number of multimapped reads tells us how many reads map to *at least* 2 loci. In the STAR command, the parameter `--outFilterMultimapNmax` allows us to set the maximum number of loci that a read maps to. In the tutorial, we used a value of `1`, so we only kept uniquely mapped reads that aligned to `1` loci. 
+The alignment statistics from #2 show the number of multimapped reads, which are reads that mapped equally well across multiple loci in the genome. Multi-mapped reads are generally not useful for downstream analyses but they are an important quality control metric for alignment. We can discard multi-mapped reads from our final BAM file by setting an upper bound (maximum) on the number of loci that a read maps to. In the STAR command, this filtering is achieved by the `--outFilterMultimapNmax` parameter. Using a value of `1` will keep only uniquely mapped reads, i.e. single loci. In the tutorial, we used a value of `100` to effectively keep all multimapped reads. 
 
-a) Edit the STAR sbatch file and change the `outFilterMultimapNmax` parameter to **5**. Rerun the alignment and report the percentage of reads that are uniquely mapped in `Log.out.final`. Repeat for parameter values of **10, 15, 20**, each time reporting the percentage of multi-mapped reads. 
+a) Edit the STAR sbatch file and change the `outFilterMultimapNmax` parameter to **5**. Rerun the alignment and report the percentage of reads that are mapped to multiple loci in `Log.out.final`. Repeat for parameter values of **10, 15, 20**, each time reporting the percentage of multi-mapped reads. 
 
 b) For multi-mapped reads, how many loci do most reads map to? Give a range based on the values from a).
 
@@ -307,20 +307,20 @@ c) How can one reduce the multi-mapping rate experimentally? i.e. have more uniq
 
 Download the final gene count matrix `count_matrix.txt` to your computer by typing the following `scp` command on your laptop terminal:
 
-```{r,eval=F}
+```{bash,eval=F}
 CNETID='X'
 scp $CNETID@midway2.rcc.uchicago.edu:/scratch/midway2/$CNETID/counts/count_matrix.txt ~/
 ```
 
 Open RStudio, and load the count matrix into R using the code below:
 
-```{r,eval=F}
+```{bash,eval=F}
 counts <- read.delim('~/count_matrix.txt',sep='\t', row.names=1, header = T)
 ```
 
 View the head of the matrix using:
 
-```{r, eval=F}
+```{bash, eval=F}
 head(counts)
 ```
 
@@ -330,7 +330,7 @@ Consider the gene _GAPDH_, which is a well-known housekeeping gene with function
 
 You can approximate the library size of each sample by using the `colSums()` function:
 
-```{r,eval=F}
+```{bash,eval=F}
 lib_size <- colSums(counts)
 ```
 

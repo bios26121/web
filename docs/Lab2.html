@@ -411,7 +411,7 @@ STAR --runThreadN 10 \
      --genomeDir $STAR_REF_INDEX \
      --readFilesIn $FASTQ_FILES \
      --readFilesCommand zcat \
-     --outFilterMultimapNmax 1 \
+     --outFilterMultimapNmax 100 \
      --outSAMtype BAM SortedByCoordinate \
      --outSAMattrRGline $READ_GROUP_IDs \
      --outFileNamePrefix $OUT_DIR/</code></pre>
@@ -495,9 +495,9 @@ ENSG00000243485.5   0   0   0   0   0   0   0   0   0   0</code></pre>
 </div>
 <div id="multimapped-reads" class="section level3">
 <h3>3. <strong>Multimapped Reads</strong></h3>
-<p>The alignment statistics from question #2 show the number of multimapped reads, which are reads that mapped equally well across multiple loci in the genome. The number of multimapped reads tells us how many reads map to <em>at least</em> 2 loci. In the STAR command, the parameter <code>--outFilterMultimapNmax</code> allows us to set the maximum number of loci that a read maps to. In the tutorial, we used a value of <code>1</code>, so we only kept uniquely mapped reads that aligned to <code>1</code> loci.</p>
+<p>The alignment statistics from #2 show the number of multimapped reads, which are reads that mapped equally well across multiple loci in the genome. Multi-mapped reads are generally not useful for downstream analyses but they are an important quality control metric for alignment. We can discard multi-mapped reads from our final BAM file by setting an upper bound (maximum) on the number of loci that a read maps to. In the STAR command, this filtering is achieved by the <code>--outFilterMultimapNmax</code> parameter. Using a value of <code>1</code> will keep only uniquely mapped reads, i.e. single loci. In the tutorial, we used a value of <code>100</code> to effectively keep all multimapped reads.</p>
 <ol style="list-style-type: lower-alpha">
-<li><p>Edit the STAR sbatch file and change the <code>outFilterMultimapNmax</code> parameter to <strong>5</strong>. Rerun the alignment and report the percentage of reads that are uniquely mapped in <code>Log.out.final</code>. Repeat for parameter values of <strong>10, 15, 20</strong>, each time reporting the percentage of multi-mapped reads.</p></li>
+<li><p>Edit the STAR sbatch file and change the <code>outFilterMultimapNmax</code> parameter to <strong>5</strong>. Rerun the alignment and report the percentage of reads that are mapped to multiple loci in <code>Log.out.final</code>. Repeat for parameter values of <strong>10, 15, 20</strong>, each time reporting the percentage of multi-mapped reads.</p></li>
 <li><p>For multi-mapped reads, how many loci do most reads map to? Give a range based on the values from a).</p></li>
 <li><p>How can one reduce the multi-mapping rate experimentally? i.e. have more unique mapping?</p></li>
 </ol>
@@ -505,16 +505,16 @@ ENSG00000243485.5   0   0   0   0   0   0   0   0   0   0</code></pre>
 <div id="library-size" class="section level3">
 <h3>4. <strong>Library size</strong></h3>
 <p>Download the final gene count matrix <code>count_matrix.txt</code> to your computer by typing the following <code>scp</code> command on your laptop terminal:</p>
-<pre class="r"><code>CNETID=&#39;X&#39;
+<pre class="bash"><code>CNETID=&#39;X&#39;
 scp $CNETID@midway2.rcc.uchicago.edu:/scratch/midway2/$CNETID/counts/count_matrix.txt ~/</code></pre>
 <p>Open RStudio, and load the count matrix into R using the code below:</p>
-<pre class="r"><code>counts &lt;- read.delim(&#39;~/count_matrix.txt&#39;,sep=&#39;\t&#39;, row.names=1, header = T)</code></pre>
+<pre class="bash"><code>counts &lt;- read.delim(&#39;~/count_matrix.txt&#39;,sep=&#39;\t&#39;, row.names=1, header = T)</code></pre>
 <p>View the head of the matrix using:</p>
-<pre class="r"><code>head(counts)</code></pre>
+<pre class="bash"><code>head(counts)</code></pre>
 <p>The row names of the matrix <code>counts</code> represent gene IDs, while the column names represent samples.</p>
 <p>Consider the gene <em>GAPDH</em>, which is a well-known housekeeping gene with functions in glycolysis. <em>GAPDH</em> is commonly used a control in RNA-seq studies because its expression should more-or-less be constant across samples. If it’s not constant, then the reason is likely technical rather than biological. We can use the expression of <em>GAPDH</em> to test for technical variability in gene expression. One common technical variability is the library size, which is the total number of reads in each sample.</p>
 <p>You can approximate the library size of each sample by using the <code>colSums()</code> function:</p>
-<pre class="r"><code>lib_size &lt;- colSums(counts)</code></pre>
+<pre class="bash"><code>lib_size &lt;- colSums(counts)</code></pre>
 <ul>
 <li>Plot the the expression of <em>GAPDH</em> (gene ID: ENSG00000111640.14) against the library size in each sample. Report the plot.</li>
 <li>What is the relationship between these two variables? Fit a linear model and report the <span class="math inline">\(R^2\)</span> statistic.</li>
