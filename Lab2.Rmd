@@ -128,14 +128,18 @@ If for any reason the job fails, you can check `fastq_errors` file (in the same 
 
 The script above will generate a directory called `fastqc_results` in your scratch directory. In it, there are two files per FASTQ: `SAMPLE_NAME_fastqc.html` and `SAMPLE_NAME_fastqc.zip`. The HTML file contains all the test metrics and the .zip file contains the content needed to recreate the HTML file.
 
-To view the HTML reports, we will need to download them to our computes. Open a *new* terminal tab, and use the secure copy function `scp` to download them:
+To view the HTML reports, we will need to download them to our computes. Open a *new* terminal tab, and use the secure copy function `scp` to download them (for Mac users)
 
 ```{bash,eval=F}
 CNETID='X'
 scp -r $CNETID@midway2.rcc.uchicago.edu:/scratch/midway2/$CNETID/fastqc_results/ ~/
 ```
 
-Replace 'X' with your CNET ID. The command above will download the folder to your home directory on YOUR laptop (not the server). Enter password and authenticate to complete download. Double click the .html file to open it in your browser. The left panel indicates all the tests that FASTQC ran. A green icon indicates a pass, orange is a warning, and red is a failure. 
+Replace 'X' with your CNET ID. The command above will download the folder to your home directory on YOUR laptop (not the server). Enter password and authenticate to complete download. 
+
+If you are a Windows user, follow the steps here to download using [WinSCP][https://research.computing.yale.edu/support/hpc/user-manual/transfer-files-or-cluster]. 
+
+Double click the .html file to open it in your browser. The left panel indicates all the tests that FASTQC ran. A green icon indicates a pass, orange is a warning, and red is a failure. 
 
 The most important catagories to look out for are "per sequence quality scores" and "per base sequence quality". If these are poor metrics, we would have to trim low quality positions, and filter low quality reads. At the minimum, all samples should at least pass the "per sequence quality scores" (a warning is fine) before moving onto alignment, i.e. no reads with failing quality scores. Check all 10 reports to see if this is the case and then move on to the next section. You can learn more about all the other tests  [here](http://www.bioinformatics.babraham.ac.uk/projects/fastqc/Help/3%20Analysis%20Modules/). 
  

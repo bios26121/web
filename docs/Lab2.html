@@ -379,10 +379,12 @@ Job id               Username Queue    Name                 SessID NDS   TSK   M
 56523402             CNETID   broadwl  fastqc               --         1     1     -- 12:00 R 00:00</code></pre>
 <p>If for any reason the job fails, you can check <code>fastq_errors</code> file (in the same directory) for error messages. This should take ~5 minutes to complete.</p>
 <p>The script above will generate a directory called <code>fastqc_results</code> in your scratch directory. In it, there are two files per FASTQ: <code>SAMPLE_NAME_fastqc.html</code> and <code>SAMPLE_NAME_fastqc.zip</code>. The HTML file contains all the test metrics and the .zip file contains the content needed to recreate the HTML file.</p>
-<p>To view the HTML reports, we will need to download them to our computes. Open a <em>new</em> terminal tab, and use the secure copy function <code>scp</code> to download them:</p>
+<p>To view the HTML reports, we will need to download them to our computes. Open a <em>new</em> terminal tab, and use the secure copy function <code>scp</code> to download them (for Mac users)</p>
 <pre class="bash"><code>CNETID=&#39;X&#39;
 scp -r $CNETID@midway2.rcc.uchicago.edu:/scratch/midway2/$CNETID/fastqc_results/ ~/</code></pre>
-<p>Replace ‘X’ with your CNET ID. The command above will download the folder to your home directory on YOUR laptop (not the server). Enter password and authenticate to complete download. Double click the .html file to open it in your browser. The left panel indicates all the tests that FASTQC ran. A green icon indicates a pass, orange is a warning, and red is a failure.</p>
+<p>Replace ‘X’ with your CNET ID. The command above will download the folder to your home directory on YOUR laptop (not the server). Enter password and authenticate to complete download.</p>
+<p>If you are a Windows user, follow the steps here to download using [WinSCP][<a href="https://research.computing.yale.edu/support/hpc/user-manual/transfer-files-or-cluster" class="uri">https://research.computing.yale.edu/support/hpc/user-manual/transfer-files-or-cluster</a>].</p>
+<p>Double click the .html file to open it in your browser. The left panel indicates all the tests that FASTQC ran. A green icon indicates a pass, orange is a warning, and red is a failure.</p>
 <p>The most important catagories to look out for are “per sequence quality scores” and “per base sequence quality”. If these are poor metrics, we would have to trim low quality positions, and filter low quality reads. At the minimum, all samples should at least pass the “per sequence quality scores” (a warning is fine) before moving onto alignment, i.e. no reads with failing quality scores. Check all 10 reports to see if this is the case and then move on to the next section. You can learn more about all the other tests <a href="http://www.bioinformatics.babraham.ac.uk/projects/fastqc/Help/3%20Analysis%20Modules/">here</a>.</p>
 </div>
 <div id="alignment" class="section level1">

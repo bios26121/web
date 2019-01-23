@@ -1,10 +1,10 @@
 ---
-title: "Lab 1: Introduction to Unix and Computing on Midway"
+title: "Introduction to Unix and Computing on Midway"
 author: "BIOS 26121"
 output: html_document
 ---
 
-<span style="color:red"> For this lab, please provide blue responses to all questions in green in a Rmarkdown file entitled “Lab1LastnameFirstname.rmd”. This lab requires access to a Unix command prompt. Mac users may access the ‘Terminal’ application under Applications > Utilities > Terminal. Windows 10 users may install a linux subsystem, see https://docs.microsoft.com/en-us/windows/wsl/install-win10. Please see the end of the lab for more details. If you have difficulty installing this program please talk to Dr. Haddadian. \span  
+<span style="color:red"> For this tutorial, please provide responses to all questions in green in a Word document titled "LastNameFirstName_unix.docx". This tutorial requires access to a Unix command prompt. Mac users may access the ‘Terminal’ application under Applications > Utilities > Terminal. Windows 10 users may install a linux subsystem, see https://docs.microsoft.com/en-us/windows/wsl/install-win10. Please see the end of the lab for more details. If you have difficulty installing this program please talk to Dr. Haddadian. \span  
 
 In this lab we will learn the basics of **command-line** operations in **Unix**, with a focus on learning to connect to and interact with remote computer systems. First, we will learn the command-line equivalents of many of the basic file management actions you routinely perform on your own computer. Next, we will learn how to connect to the Midway high performance computing cluster and perform analyses. <span style="color:purple"> The details of this lab will be important for upcoming labs as well as your final projects, so be sure to ask questions about anything that is unclear. \span
 
