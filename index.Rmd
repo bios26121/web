@@ -11,4 +11,6 @@ Welcome to the BIOS 26121 Lab Page!
 
 Click on the links below to access content.
 
+[Lab1: Basics of Linux](Lab1.html)
+
 [Lab2: RNA-seq preprocessing in Linux](Lab2.html)

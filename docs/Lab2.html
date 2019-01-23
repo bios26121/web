@@ -318,9 +318,15 @@ $(document).ready(function () {
 </p>
 <p>Get started by using <code>ssh</code> to log into <code>midway</code>.</p>
 <pre class="bash"><code>ssh CNETID@midway2.rcc.uchicago.edu</code></pre>
-<p>Once logged in successfully, move to the scratch working directory:</p>
-<pre class="bash"><code>cd /scratch/midway2/CNETID</code></pre>
-<p><strong>In general, you should be running all commands while in your scratch directory unless otherwise stated.</strong></p>
+<p>Once logged in successfully, move to your scratch directory. Then, make a folder called <code>Lab2</code> and go into it.</p>
+<pre class="bash"><code>
+cd /scratch/midway2/CNETID
+
+mkdir Lab2
+
+cd Lab2
+</code></pre>
+<p><strong>Please run all commands while in your <code>Lab2</code> folder! You will get errors otherwise!</strong></p>
 <p>The raw data can be found in the class directory. You do not need to go into the class directory. We will be processing RNA-seq samples from 10 lymphoblastoid cell lines derived from unrelated Nigerian individuals (Pickrell et al. 2010.) You can view the FASTQ files by typing:</p>
 <pre class="bash"><code>ls /project2/bios26121/Lab2_RNAseq_Processing/unmapped_reads/</code></pre>
 <pre class="bash"><code>NA18504_argonne.fastq.gz  NA18519_argonne.fastq.gz  NA18856_argonne.fastq.gz  NA19099_argonne.fastq.gz  NA19116_argonne.fastq.gz
@@ -349,7 +355,7 @@ BBB@1@&gt;B?AABBBBBBBBABAAB&gt;=A=BBBA9@7@&gt;/@3A&lt;)&lt;5@            # BASE 
 #SBATCH --nodes=1
 #SBATCH --ntasks=1
 #SBATCH --mem-per-cpu=20000
-#SBATCH --account=pi-xinhe
+#SBATCH --account=bios26121
 #SBATCH --partition=broadwl
 
 module load fastqc
@@ -395,7 +401,7 @@ scp -r $CNETID@midway2.rcc.uchicago.edu:/scratch/midway2/$CNETID/fastqc_results/
 #SBATCH --nodes=1
 #SBATCH --ntasks=10
 #SBATCH --mem-per-cpu=4000
-#SBATCH --account=pi-xinhe
+#SBATCH --account=bios26121
 #SBATCH --partition=bigmem2
 
 module load STAR
@@ -439,7 +445,7 @@ samtools view BAM_files/Aligned.sortedByCoord.out.bam | head -n 1</code></pre>
 #SBATCH --time=12:00:00
 #SBATCH --nodes=1
 #SBATCH --ntasks=1
-#SBATCH --account=pi-xinhe
+#SBATCH --account=bios26121
 #SBATCH --partition=broadwl
 
 ANNOTATIONS=&#39;/project2/bios26121/Lab2_RNAseq_Processing/refGenome/gencode.v27.annotation.gtf&#39;
@@ -479,7 +485,7 @@ ENSG00000243485.5   0   0   0   0   0   0   0   0   0   0</code></pre>
 <h3>1. <strong>FastQC Reports</strong></h3>
 <p>We generated 10 quality control (QC) reports in the first section of this tutorial. Have a look at the “Per base sequence quality” in each report. This section reports the sequencing quality (y-axis) as a function of position in each read (x-axis).</p>
 <ul>
-<li>What can you say about the average error rate as a function of base position? Hint: It is a problem associated with Illumina reads that we discussed in class.</li>
+<li>What can you say about the average quality as a function of base position? Hint: It is a problem associated with Illumina reads that we discussed in class.</li>
 <li>What would you do (using bioinformatics) to alleviate this problem?</li>
 </ul>
 </div>

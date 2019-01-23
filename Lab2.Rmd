@@ -21,13 +21,19 @@ Get started by using `ssh` to log into `midway`.
 ssh CNETID@midway2.rcc.uchicago.edu
 ```
 
-Once logged in successfully, move to the scratch working directory:
+Once logged in successfully, move to your scratch directory. Then, make a folder called `Lab2` and go into it.
 
 ```{bash,eval=F}
+
 cd /scratch/midway2/CNETID
+
+mkdir Lab2
+
+cd Lab2
+
 ```
 
-**In general, you should be running all commands while in your scratch directory unless otherwise stated.**
+**Please run all commands while in your `Lab2` folder! You will get errors otherwise!**
 
 The raw data can be found in the class directory. You do not need to go into the class directory. We will be processing RNA-seq samples from 10 lymphoblastoid cell lines derived from unrelated Nigerian individuals (Pickrell et al. 2010.) You can view the FASTQ files by typing:
 
@@ -81,7 +87,7 @@ cat fastqc.sbatch
 #SBATCH --nodes=1
 #SBATCH --ntasks=1
 #SBATCH --mem-per-cpu=20000
-#SBATCH --account=pi-xinhe
+#SBATCH --account=bios26121
 #SBATCH --partition=broadwl
 
 module load fastqc
@@ -159,7 +165,7 @@ cat align_reads.sbatch
 #SBATCH --nodes=1
 #SBATCH --ntasks=10
 #SBATCH --mem-per-cpu=4000
-#SBATCH --account=pi-xinhe
+#SBATCH --account=bios26121
 #SBATCH --partition=bigmem2
 
 module load STAR
@@ -226,7 +232,7 @@ cat featurecounts.sbatch
 #SBATCH --time=12:00:00
 #SBATCH --nodes=1
 #SBATCH --ntasks=1
-#SBATCH --account=pi-xinhe
+#SBATCH --account=bios26121
 #SBATCH --partition=broadwl
 
 ANNOTATIONS='/project2/bios26121/Lab2_RNAseq_Processing/refGenome/gencode.v27.annotation.gtf'
@@ -281,7 +287,7 @@ ENSG00000243485.5	0	0	0	0	0	0	0	0	0	0
 
 We generated 10 quality control (QC) reports in the first section of this tutorial. Have a look at the "Per base sequence quality" in each report. This section reports the sequencing quality (y-axis) as a function of position in each read (x-axis). 
 
-* What can you say about the average error rate as a function of base position? Hint: It is a problem associated with Illumina reads that we discussed in class. 
+* What can you say about the average quality as a function of base position? Hint: It is a problem associated with Illumina reads that we discussed in class. 
 * What would you do (using bioinformatics) to alleviate this problem?
 
 ### 2. **Alignment** 
