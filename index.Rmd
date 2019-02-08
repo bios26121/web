@@ -16,3 +16,5 @@ Click on the links below to access content.
 [Homework 2: RNA-seq preprocessing in Linux](Lab2.html)
 
 [Homework 3](hm3.html)
+
+[Homework 4](hm4.html)
